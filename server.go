@@ -18,9 +18,9 @@ import (
 
 	"golang.org/x/net/http2"
 
-	"github.com/mmatczuk/go-http-tunnel/id"
-	"github.com/mmatczuk/go-http-tunnel/log"
-	"github.com/mmatczuk/go-http-tunnel/proto"
+	"github.com/tinder-edwardowens/go-http-tunnel/id"
+	"github.com/tinder-edwardowens/go-http-tunnel/log"
+	"github.com/tinder-edwardowens/go-http-tunnel/proto"
 )
 
 type Hook interface {

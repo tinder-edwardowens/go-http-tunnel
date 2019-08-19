@@ -14,8 +14,8 @@ import (
 	"net/url"
 	"path"
 
-	"github.com/mmatczuk/go-http-tunnel/log"
-	"github.com/mmatczuk/go-http-tunnel/proto"
+	"github.com/tinder-edwardowens/go-http-tunnel/log"
+	"github.com/tinder-edwardowens/go-http-tunnel/proto"
 )
 
 // HTTPProxy forwards HTTP traffic.

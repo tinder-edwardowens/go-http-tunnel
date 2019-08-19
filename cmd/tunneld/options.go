@@ -21,10 +21,10 @@ Example:
 	tuneld -httpAddr :8080 -httpsAddr ""
 
 Author:
-	Written by M. Matczuk (mmatczuk@gmail.com)
+	Written by M. Matczuk (tinder-edwardowens@gmail.com)
 
 Bugs:
-	Submit bugs to https://github.com/mmatczuk/go-http-tunnel/issues
+	Submit bugs to https://github.com/tinder-edwardowens/go-http-tunnel/issues
 `
 
 func init() {

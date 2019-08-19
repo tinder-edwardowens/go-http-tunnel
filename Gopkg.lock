@@ -35,7 +35,7 @@
 
 [[projects]]
   digest = "1:3a86b4526cc15ca4caf041c7f6943b59b3eb3711a9bc832de27b0801b826e019"
-  name = "github.com/mmatczuk/go-http-tunnel"
+  name = "github.com/tinder-edwardowens/go-http-tunnel"
   packages = [
     ".",
     "id",
@@ -99,11 +99,11 @@
     "github.com/cenkalti/backoff",
     "github.com/felixge/tcpkeepalive",
     "github.com/golang/mock/gomock",
-    "github.com/mmatczuk/go-http-tunnel",
-    "github.com/mmatczuk/go-http-tunnel/id",
-    "github.com/mmatczuk/go-http-tunnel/log",
-    "github.com/mmatczuk/go-http-tunnel/proto",
-    "github.com/mmatczuk/go-http-tunnel/tunnelmock",
+    "github.com/tinder-edwardowens/go-http-tunnel",
+    "github.com/tinder-edwardowens/go-http-tunnel/id",
+    "github.com/tinder-edwardowens/go-http-tunnel/log",
+    "github.com/tinder-edwardowens/go-http-tunnel/proto",
+    "github.com/tinder-edwardowens/go-http-tunnel/tunnelmock",
     "golang.org/x/net/http2",
     "gopkg.in/yaml.v2",
   ]
