@@ -23,6 +23,10 @@ import (
 	"github.com/mmatczuk/go-http-tunnel/proto"
 )
 
+type Hook interface {
+	OnConnect(id id.ID) error
+}
+
 // ServerConfig defines configuration for the Server.
 type ServerConfig struct {
 	// Addr is TCP address to listen for client connections. If empty ":0"
@@ -38,6 +42,8 @@ type ServerConfig struct {
 	Listener net.Listener
 	// Logger is optional logger. If nil logging is disabled.
 	Logger log.Logger
+
+	Hook Hook
 }
 
 // Server is responsible for proxying public connections to the client over a
@@ -209,6 +215,12 @@ func (s *Server) handleClient(conn net.Conn) {
 	}
 
 	logger = logger.With("identifier", identifier)
+
+	if s.config.Hook != nil {
+		if err := s.config.Hook.OnConnect(identifier); err != nil {
+			goto reject
+		}
+	}
 
 	if s.config.AutoSubscribe {
 		s.Subscribe(identifier)
