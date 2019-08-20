@@ -65,12 +65,6 @@ func NewClient(config *ClientConfig) (*Client, error) {
 	if config.TLSClientConfig == nil {
 		return nil, errors.New("missing TLSClientConfig")
 	}
-	if len(config.Tunnels) == 0 {
-		return nil, errors.New("missing Tunnels")
-	}
-	if config.Proxy == nil {
-		return nil, errors.New("missing Proxy")
-	}
 
 	logger := config.Logger
 	if logger == nil {
