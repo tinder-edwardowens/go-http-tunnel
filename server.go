@@ -388,6 +388,14 @@ func (s *Server) addTunnels(tunnels map[string]*proto.Tunnel, identifier id.ID) 
 	for name, t := range tunnels {
 		switch t.Protocol {
 		case proto.HTTP:
+			d, _ := json.Marshal(tunnels)
+			s.logger.Log(
+				"level", 2,
+				"action", "adding tunnel",
+				"identifier", identifier,
+				"addr", name,
+				"tunnels", string(d),
+			)
 			i.Hosts = append(i.Hosts, &HostAuth{t.Host, NewAuth(t.Auth)})
 		case proto.TCP, proto.TCP4, proto.TCP6, proto.UNIX:
 			var l net.Listener
