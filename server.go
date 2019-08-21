@@ -216,17 +216,6 @@ func (s *Server) handleClient(conn net.Conn) {
 
 	logger = logger.With("identifier", identifier)
 
-	if s.config.Hook != nil {
-		if err := s.config.Hook.OnConnect(identifier); err != nil {
-			logger.Log(
-				"level", 2,
-				"msg", "hook error",
-				"err", err,
-			)
-			goto reject
-		}
-	}
-
 	if s.config.AutoSubscribe {
 		s.Subscribe(identifier)
 	} else if !s.IsSubscribed(identifier) {
@@ -330,6 +319,17 @@ func (s *Server) handleClient(conn net.Conn) {
 		goto reject
 	}
 
+	if s.config.Hook != nil {
+		if err := s.config.Hook.OnConnect(identifier); err != nil {
+			logger.Log(
+				"level", 2,
+				"msg", "hook error",
+				"err", err,
+			)
+			goto reject
+		}
+	}
+
 	logger.Log(
 		"level", 1,
 		"action", "connected",
@@ -388,14 +388,6 @@ func (s *Server) addTunnels(tunnels map[string]*proto.Tunnel, identifier id.ID) 
 	for name, t := range tunnels {
 		switch t.Protocol {
 		case proto.HTTP:
-			d, _ := json.Marshal(tunnels)
-			s.logger.Log(
-				"level", 2,
-				"action", "adding tunnel",
-				"identifier", identifier,
-				"addr", name,
-				"tunnels", string(d),
-			)
 			i.Hosts = append(i.Hosts, &HostAuth{t.Host, NewAuth(t.Auth)})
 		case proto.TCP, proto.TCP4, proto.TCP6, proto.UNIX:
 			var l net.Listener
