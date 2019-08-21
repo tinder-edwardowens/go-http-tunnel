@@ -218,6 +218,11 @@ func (s *Server) handleClient(conn net.Conn) {
 
 	if s.config.Hook != nil {
 		if err := s.config.Hook.OnConnect(identifier); err != nil {
+			logger.Log(
+				"level", 2,
+				"msg", "hook error",
+				"err", err,
+			)
 			goto reject
 		}
 	}
