@@ -152,6 +152,12 @@ func (r *registry) set(i *RegistryItem, identifier id.ID) error {
 				auth:       h.Auth,
 			}
 		}
+		r.logger.Log(
+			"level", 2,
+			"action", "added host",
+			"identifier", identifier,
+			"msg", r.hosts,
+		)
 	}
 
 	r.items[identifier] = i
