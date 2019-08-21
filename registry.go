@@ -5,6 +5,7 @@
 package tunnel
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"sync"
@@ -152,11 +153,12 @@ func (r *registry) set(i *RegistryItem, identifier id.ID) error {
 				auth:       h.Auth,
 			}
 		}
+		d, _ := json.Marshal(r.hosts)
 		r.logger.Log(
 			"level", 2,
 			"action", "added host",
 			"identifier", identifier,
-			"msg", r.hosts,
+			"msg", string(d),
 		)
 	}
 
