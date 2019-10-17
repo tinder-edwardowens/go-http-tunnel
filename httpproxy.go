@@ -140,7 +140,7 @@ func (p *HTTPProxy) Proxy(w io.Writer, r io.ReadCloser, msg *proto.ControlMessag
 		writer.WriteHeader(http.StatusBadGateway)
 	}
 
-	p.ReverseProxy.Transport = &transport{http.DefaultTransport}
+	p.ReverseProxy.Transport = &transport{RoundTripper: http.DefaultTransport, logger: p.logger}
 
 	p.ServeHTTP(rw, req)
 	p.logger.Log(
