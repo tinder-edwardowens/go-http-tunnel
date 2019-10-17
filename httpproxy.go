@@ -7,16 +7,29 @@ package tunnel
 import (
 	"bufio"
 	"context"
+	"github.com/tinder-edwardowens/go-http-tunnel/log"
+	"github.com/tinder-edwardowens/go-http-tunnel/proto"
 	"io"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"path"
-
-	"github.com/tinder-edwardowens/go-http-tunnel/log"
-	"github.com/tinder-edwardowens/go-http-tunnel/proto"
 )
+
+type transport struct {
+	http.RoundTripper
+	logger log.Logger
+}
+
+func (t *transport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
+	resp, err = t.RoundTripper.RoundTrip(req)
+	if err != nil {
+		t.logger.Log("level", 0, "msg", "round tripper error", "err", err.Error())
+		return nil, err
+	}
+	return resp, nil
+}
 
 // HTTPProxy forwards HTTP traffic.
 type HTTPProxy struct {
@@ -126,6 +139,8 @@ func (p *HTTPProxy) Proxy(w io.Writer, r io.ReadCloser, msg *proto.ControlMessag
 		)
 		writer.WriteHeader(http.StatusBadGateway)
 	}
+
+	p.ReverseProxy.Transport = &transport{http.DefaultTransport}
 
 	p.ServeHTTP(rw, req)
 	p.logger.Log(
