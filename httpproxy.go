@@ -19,22 +19,18 @@ import (
 )
 
 type logResponseWriter struct {
-	writer http.ResponseWriter
+	http.ResponseWriter
 	logger log.Logger
-}
-
-func (l *logResponseWriter) Header() http.Header {
-	return l.writer.Header()
 }
 
 func (l *logResponseWriter) Write(b []byte) (int, error) {
 	l.logger.Log("level", 3, "msg", "write to response", "data", string(b))
-	return l.writer.Write(b)
+	return l.ResponseWriter.Write(b)
 }
 
 func (l *logResponseWriter) WriteHeader(statusCode int) {
 	l.logger.Log("level", 3, "msg", "writing resp status", "status", statusCode)
-	l.writer.WriteHeader(statusCode)
+	l.ResponseWriter.WriteHeader(statusCode)
 }
 
 // HTTPProxy forwards HTTP traffic.
@@ -138,8 +134,8 @@ func (p *HTTPProxy) Proxy(w io.Writer, r io.ReadCloser, msg *proto.ControlMessag
 	req.URL.Host = msg.ForwardedHost
 
 	p.ServeHTTP(&logResponseWriter{
-		writer: rw,
-		logger: p.logger,
+		ResponseWriter: rw,
+		logger:         p.logger,
 	}, req)
 }
 
