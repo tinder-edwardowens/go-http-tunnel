@@ -18,6 +18,16 @@ import (
 	"github.com/tinder-edwardowens/go-http-tunnel/proto"
 )
 
+type logResponseWriter struct {
+	http.ResponseWriter
+	logger log.Logger
+}
+
+func (l *logResponseWriter) WriteHeader(code int) {
+	l.logger.Log("level", 3, "msg", "response received", "status", code)
+	l.ResponseWriter.WriteHeader(code)
+}
+
 // HTTPProxy forwards HTTP traffic.
 type HTTPProxy struct {
 	httputil.ReverseProxy
@@ -118,7 +128,10 @@ func (p *HTTPProxy) Proxy(w io.Writer, r io.ReadCloser, msg *proto.ControlMessag
 	setXForwardedFor(req.Header, msg.RemoteAddr)
 	req.URL.Host = msg.ForwardedHost
 
-	p.ServeHTTP(rw, req)
+	p.ServeHTTP(&logResponseWriter{
+		ResponseWriter: rw,
+		logger:         p.logger,
+	}, req)
 	p.logger.Log(
 		"level", 3,
 		"msg", "response received",
