@@ -100,6 +100,21 @@ func (p *HTTPProxy) Proxy(w io.Writer, r io.ReadCloser, msg *proto.ControlMessag
 		return
 	}
 
+	if dump, err := httputil.DumpRequest(req, true); err != nil {
+		p.logger.Log(
+			"level", 3,
+			"msg", "failed to dump request",
+			"req", req,
+			"err", err,
+		)
+	} else {
+		p.logger.Log(
+			"level", 3,
+			"msg", "request received",
+			"req", string(dump),
+		)
+	}
+
 	setXForwardedFor(req.Header, msg.RemoteAddr)
 	req.URL.Host = msg.ForwardedHost
 
