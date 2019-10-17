@@ -118,6 +118,15 @@ func (p *HTTPProxy) Proxy(w io.Writer, r io.ReadCloser, msg *proto.ControlMessag
 	setXForwardedFor(req.Header, msg.RemoteAddr)
 	req.URL.Host = msg.ForwardedHost
 
+	p.ReverseProxy.ErrorHandler = func(writer http.ResponseWriter, request *http.Request, e error) {
+		p.logger.Log(
+			"level", 0,
+			"msg", "error in response",
+			"err", e.Error(),
+		)
+		writer.WriteHeader(http.StatusBadGateway)
+	}
+
 	p.ServeHTTP(rw, req)
 	p.logger.Log(
 		"level", 3,
