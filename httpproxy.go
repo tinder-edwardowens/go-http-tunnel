@@ -28,11 +28,10 @@ func (t *transport) RoundTrip(req *http.Request) (resp *http.Response, err error
 		t.logger.Log("level", 0, "msg", "round tripper error", "err", err.Error())
 	}
 
+	t.logger.Log("level", 3, "msg", "logging round trip resp")
 	dumpResponse(resp, t.logger)
-	if err != nil {
-		t.logger.Log("level", 3, "msg", "logging round trip req")
-		dumpRequest(req, t.logger)
-	}
+	t.logger.Log("level", 3, "msg", "logging round trip req")
+	dumpRequest(req, t.logger)
 
 	return resp, err
 }
