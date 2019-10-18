@@ -15,6 +15,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"path"
+	"time"
 )
 
 type transport struct {
@@ -130,7 +131,20 @@ func (p *HTTPProxy) Proxy(w io.Writer, r io.ReadCloser, msg *proto.ControlMessag
 		writer.WriteHeader(http.StatusBadGateway)
 	}
 
-	p.ReverseProxy.Transport = &transport{RoundTripper: http.DefaultTransport, logger: p.logger}
+	transported := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+			DualStack: true,
+		}).DialContext,
+		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 5 * time.Second,
+	}
+	p.ReverseProxy.Transport = &transport{RoundTripper: transported, logger: p.logger}
 
 	dumpRequest(req, p.logger)
 
