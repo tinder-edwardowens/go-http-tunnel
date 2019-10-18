@@ -26,8 +26,14 @@ func (t *transport) RoundTrip(req *http.Request) (resp *http.Response, err error
 	resp, err = t.RoundTripper.RoundTrip(req)
 	if err != nil {
 		t.logger.Log("level", 0, "msg", "round tripper error", "err", err.Error())
-		return nil, err
 	}
+	dump, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		t.logger.Log("level", 0, "msg", "failed to dump response", "err", err.Error())
+	} else {
+		t.logger.Log("level", 3, "msg", "response dump", "resp", string(dump))
+	}
+
 	return resp, nil
 }
 
