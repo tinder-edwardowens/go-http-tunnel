@@ -27,14 +27,14 @@ func (t *transport) RoundTrip(req *http.Request) (resp *http.Response, err error
 	if err != nil {
 		t.logger.Log("level", 0, "msg", "round tripper error", "err", err.Error())
 	}
-	dump, err := httputil.DumpResponse(resp, true)
+
+	dumpResponse(resp, t.logger)
 	if err != nil {
-		t.logger.Log("level", 0, "msg", "failed to dump response", "err", err.Error())
-	} else {
-		t.logger.Log("level", 3, "msg", "response dump", "resp", string(dump))
+		t.logger.Log("level", 3, "msg", "logging round trip req")
+		dumpRequest(req, t.logger)
 	}
 
-	return resp, nil
+	return resp, err
 }
 
 // HTTPProxy forwards HTTP traffic.
@@ -119,21 +119,6 @@ func (p *HTTPProxy) Proxy(w io.Writer, r io.ReadCloser, msg *proto.ControlMessag
 		return
 	}
 
-	if dump, err := httputil.DumpRequest(req, true); err != nil {
-		p.logger.Log(
-			"level", 3,
-			"msg", "failed to dump request",
-			"req", req,
-			"err", err,
-		)
-	} else {
-		p.logger.Log(
-			"level", 3,
-			"msg", "request received",
-			"req", string(dump),
-		)
-	}
-
 	setXForwardedFor(req.Header, msg.RemoteAddr)
 	req.URL.Host = msg.ForwardedHost
 
@@ -147,6 +132,8 @@ func (p *HTTPProxy) Proxy(w io.Writer, r io.ReadCloser, msg *proto.ControlMessag
 	}
 
 	p.ReverseProxy.Transport = &transport{RoundTripper: http.DefaultTransport, logger: p.logger}
+
+	dumpRequest(req, p.logger)
 
 	p.ServeHTTP(rw, req)
 	p.logger.Log(
@@ -234,4 +221,36 @@ func (p *HTTPProxy) localURLFor(u *url.URL) *url.URL {
 	}
 
 	return p.localURL
+}
+
+func dumpRequest(req *http.Request, logger log.Logger) {
+	if req == nil {
+		return
+	}
+	if dump, err := httputil.DumpRequest(req, true); err != nil {
+		logger.Log(
+			"level", 3,
+			"msg", "failed to dump request",
+			"req", req,
+			"err", err,
+		)
+	} else {
+		logger.Log(
+			"level", 3,
+			"msg", "dumping request",
+			"req", string(dump),
+		)
+	}
+}
+
+func dumpResponse(resp *http.Response, logger log.Logger) {
+	if resp == nil {
+		return
+	}
+	dump, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		logger.Log("level", 3, "msg", "failed to dump response", "err", err.Error())
+	} else {
+		logger.Log("level", 3, "msg", "response dump", "resp", string(dump))
+	}
 }
